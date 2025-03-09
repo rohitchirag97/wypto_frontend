@@ -5,6 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { useRegisterOnBoardingStore } from "@/store/onboarding";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 import {
   Form,
@@ -16,8 +19,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRegisterOnBoardingStore } from "@/store/onboarding";
-import { toast } from "sonner";
 
 const onBoardingCOmapnySchema = signUpandOnBoardingSchema.pick({
   companyName: true,
@@ -25,21 +26,27 @@ const onBoardingCOmapnySchema = signUpandOnBoardingSchema.pick({
 
 type OnBoardingCompanySchema = z.infer<typeof onBoardingCOmapnySchema>;
 
-const page = () => {
+export default function OnboardingPage() {
   const router = useRouter();
-
+  
   const firstName = useRegisterOnBoardingStore((state) => state.firstName);
   const lastName = useRegisterOnBoardingStore((state) => state.lastName);
   const email = useRegisterOnBoardingStore((state) => state.email);
   const password = useRegisterOnBoardingStore((state) => state.password);
   const phoneNumber = useRegisterOnBoardingStore((state) => state.phoneNumber);
-
+  
   const form = useForm<OnBoardingCompanySchema>({
     resolver: zodResolver(onBoardingCOmapnySchema),
     defaultValues: {
       companyName: "",
     },
   });
+
+  useEffect(() => {
+    if (!email) {
+      router.push("/login");
+    }
+  }, [email, router]);
 
   const onSubmit = async (data: OnBoardingCompanySchema) => {
     try {
@@ -64,8 +71,10 @@ const page = () => {
       }
     }
   };
+
   return (
     <div className="flex flex-col justify-center space-y-3 items-center h-screen">
+      <h1 className="text-2xl font-semibold mb-4">Company Information</h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -84,11 +93,9 @@ const page = () => {
               </FormItem>
             )}
           />
-          <Button type="submit">Continue</Button>
+          <Button type="submit" className="w-full">Continue</Button>
         </form>
       </Form>
     </div>
   );
-};
-
-export default page;
+}

@@ -16,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { toast } from "sonner";
-import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import {
   Card,
